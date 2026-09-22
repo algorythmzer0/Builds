@@ -1,0 +1,557 @@
+The search results point to a clear solution. The best material for the toroid (per-cell memory) is Molybdenum Permalloy or Metglas for its proven, near-perfect square hysteresis loop. For the lattice (body memory), electroplated Permalloy remains the practical choice. The "ferrotoroidic" path, while conceptually perfect, is a research frontier because it currently requires cryogenic temperatures.
+
+This gives us a clear path forward. Here is the updated CELL_V1 — THE REAL FULL BUILD specification, incorporating these material choices.
+
+---
+
+CELL_V1 — THE REAL FULL BUILD
+
+No chips. No comparators. No op-amps. No diodes. No resistors in the signal path. Everything gated.
+
+---
+
+1. THE CELL
+
+Three differential pairs. One per axis.
+
+A square figure-8 toroid as the binary decider.
+
+A hex lattice below as the body memory.
+
+One RC loop tying them into one mirror pair.
+
+Two layers.
+
+---
+
+2. THE DIFFERENTIAL PAIR
+
+One pair per axis. Three pairs per cell.
+
+```
+                  V_TOP
+                    │
+           ┌────────┴────────┐
+           │                 │
+       [gated load]      [gated load]
+           │                 │
+          D_A               D_B
+           │                 │
+        ┌──┴──┐           ┌──┴──┐
+  S+ ───┤ G   │           │   G ├─── S−
+        │ Q1  │           │  Q2 │
+        │  D  │           │  D  │
+        └──┬──┘           └──┬──┘
+           │                 │
+           └────────┬────────┘
+                    │
+              [gated tail]
+                    │
+                  V_BUS
+```
+
+Q1, Q2: ALD1106 matched pair.
+
+Loads: gated current sources (MOSFET).
+Tail: gated current source (MOSFET).
+
+No resistors. No diodes.
+
+---
+
+3. THE GEOMETRY
+
+Point-up hexagon. Six edges. Three mirror pairs.
+
+```
+                    /\
+              C−   /  \   A+
+                  /    \
+                 /      \
+            B−  |        |  B+
+                | CENTER |
+                 \      /
+              A−  \    /  C+
+                   \  /
+                    \/
+```
+
+Clockwise: A+ → B+ → C+ → A− → B− → C−
+
+Mirror pairs: A+↔A−, B+↔B−, C+↔C−
+
+Edge centers, not corners.
+
+---
+
+4. THE TOROID — REFERENCE AND WRITE IN ONE FLIP
+
+The toroid doesn't do two jobs. It does one job with two names.
+
+The flip is the reference.
+The flip is the write.
+
+One event. Two names. Same state.
+
+· Old action — what was just done.
+· New view — what's now being read.
+
+The flip is the hinge. The old action becomes the new view. There is no gap. No separate update. No memory sitting next to a reference.
+
+```
+    Old view (previous reference)
+         │
+         ▼
+    Lean (pair reads against it)
+         │
+         ▼
+    Flip (toroid commits)
+         │
+         ▼
+    New view = old action
+         │
+         ▼
+    Next lean reads against it
+```
+
+Every flip advances the cycle by one step. The old action becomes the new view.
+
+---
+
+5. THE VORTEX — ONE QUBIT
+
+The toroid's flip nucleates a magnetic vortex. One vortex per toroid.
+
+One qubit.
+
+The qubit's observables are quadratic in its amplitudes. That's what makes it the quadratic.
+
+· Two complex amplitudes in
+· Four real observables out
+· Four extremal points on the Bloch sphere
+· Four views up
+· Four actions down
+· Sixteen couplings
+
+Four is not chosen. It falls out of the qubit's own structure.
+
+---
+
+6. THE TWO LAYERS
+
+```
+    ┌─────────────────────────────────────┐
+    │  SQUARE FIGURE-8 TOROID             │
+    │                                     │
+    │      ╭─────────╮   ╭─────────╮      │
+    │      │  LOBE 1 │───│  LOBE 2 │      │
+    │      ╰─────────╯   ╰─────────╯      │
+    │           │              │          │
+    │      sense winding   drive winding  │
+    ├─────────────────────────────────────┤
+    │  LATTICE (hex mesh)                 │
+    │  Permalloy-plated copper traces     │
+    │  Edge centers connect to neighbors  │
+    └─────────────────────────────────────┘
+```
+
+Top: square figure-8 toroid. Per-cell memory. The qubit.
+
+Bottom: hex lattice. Body memory. Writes its own path through use.
+
+One RC loop ties them. Top rotates. Bottom mirrors. One pair.
+
+---
+
+7. MATERIALS — THE BEST HYSTERESIS & FERROTOROIDICITY
+
+The material choice is critical. The architecture requires a sharp, square hysteresis loop for decisive flips and stable memory.
+
+For the Toroid (Per-Cell Memory):
+
+· Primary Choice: Molybdenum Permalloy (Mo-Permalloy): This is a proven, high-performance material for information storage. It can achieve a squareness ratio (Br/Bs) of ~1.0 with a very square hysteresis loop, making the flip decisive and the state highly stable.
+· Alternative: Metglas (Amorphous Metal Alloys): These modern amorphous alloys offer excellent performance. Certain compositions can reach a squareness ratio of almost unity after annealing and have lower losses for fast magnetic reversals compared to crystalline materials.
+
+For the Lattice (Body Memory):
+
+· Best Practical Choice: Electroplated Permalloy (Ni80Fe20): This is the standard for PCB-integrated magnetics. It can be electroplated directly onto the copper traces and through-holes of the lattice PCB. Its magnetic properties (coercivity, squareness) can be tuned during the plating process.
+
+The Frontier — Ferrotoroidic Materials:
+
+· Ferrotoroidic materials, such as olivine phosphates like LiCoPO4, are the ideal theoretical match. They natively exhibit four stable magnetic states and a toroidic hysteresis loop, which perfectly mirrors the architecture's quadratic model and vortex qubit concept.
+· The Challenge: The primary obstacle is temperature. Many known ferrotoroidic materials only exhibit this order at cryogenic temperatures (below -200°F / -129°C). However, recent research indicates that tuning the material composition, such as reducing lithium content in olivine phosphates, can raise the magnetic transition temperature. This is an active area of research.
+
+Summary of Material Strategy:
+For the first Phase I build, use Molybdenum Permalloy for the toroid and electroplated Permalloy for the lattice. These are proven, room-temperature materials that will allow you to validate the core architecture. The ferrotoroidic path is the long-term goal, but it requires solving the temperature challenge first.
+
+---
+
+8. THE WINDINGS
+
+· Sense winding: 10 turns, 36 AWG. Reads the lean. Leads to S+ and S−.
+· Drive winding: 50 turns, 30 AWG. Drives the toroid. Leads to the H-bridge.
+
+Both wrap through the figure-8 toroid.
+
+---
+
+9. THE H-BRIDGE
+
+```
+    V_TOP
+      │
+    ┌─┴─┐           ┌─┴─┐
+   [M1]│           │[M2]│    P-ch, zero-threshold
+    │   │           │   │
+    ├───┼── OUT1 ───┼───┤
+    │   │           │   │
+    │  WINDING    WINDING│
+    │   │           │   │
+    ├───┼── OUT2 ───┼───┤
+    │   │           │   │
+   [M3]│           │[M4]│    N-ch, zero-threshold
+    │   │           │   │
+    └─┬─┘           └─┬─┘
+      │               │
+    V_BUS           V_BUS
+```
+
+M1, M2: ALD110900 (P-channel, zero-threshold).
+M3, M4: ALD110800 (N-channel, zero-threshold).
+
+· PUSH — M1 on, M4 on
+· PULL — M2 on, M3 on
+· HOLD / PASS — all off
+· FLIP — swap
+
+No H-bridge driver chip. The MOSFETs are the H-bridge.
+
+---
+
+10. THE LAW
+
+```
+    Two agree           → reinforce
+    Two oppose          → HOLD
+    Only one agrees     → wait
+    Third still moving  → inhibit
+```
+
+Implementation: the toroid's Hc is the threshold. The flip is the IN signal. No comparators.
+
+Each flip injects a current pulse into the SUM node. Threshold at ±1.5 pulses. PERMIT fires.
+
+---
+
+11. THE THREE CURRENT TYPES
+
+Every current type has a Field side and a Void side.
+
+BC-DC
+
+· Field up: drive out
+· Void down: return to V_BUS
+· Controls reinjection
+· Signals up strain
+· Confirms and denies
+
+TC-AC
+
+· Field up: lean positive
+· Void down: lean negative
+· The ternary choice
+
+QC-RC
+
+· Field up (views): BASELINE, DELTA, HEADING, RESULT
+· Void down (actions): PULL, PUSH, FLIP, PASS
+· Rotates the whole state
+· Lattice bus is the mirror
+
+DC and AC are phases of RC. One loop.
+
+Two binaries per current type. Six binaries total. Ternary sits between them.
+
+---
+
+12. MEMORY IS THE REFERENCE
+
+No separate reference circuit.
+
+The toroid's flipped state is the reference.
+
+The lattice's accumulated path is the reference depth.
+
+Every write is a reference update. Every reference update is a memory write.
+
+The baseline zero is the memory. Two cells with different histories have different references. You cannot copy the reference.
+
+---
+
+13. THE LATTICE WRITES ITS OWN PATH
+
+Every write deepens the path. The next event follows the same route more easily. The route evolves through use.
+
+· First write: shallow trace.
+· Repeated writes: path deepens.
+· Over time: the path is preferred.
+
+Not memory as a snapshot. Memory as a groove that wears in.
+
+Evolution through use. The substrate changes because of its own history.
+
+The lattice is:
+
+· Muscle memory — the accumulated path
+· Distributed intelligence — coupling across cells
+· Body state — the combined pattern
+· Strain signal — saturation, sag, thermal load
+
+Silent during normal operation. Tops off the bus. Balances. Only danger thresholds or reflex inputs trip a binary signal.
+
+---
+
+14. REINJECTION — EVERYTHING GATED
+
+No diodes.
+
+When the winding collapses, the H-bridge MOSFETs that were off become the steering path. They turn on and route current to V_BUS. Same MOSFETs. Different phase.
+
+```
+    Every collapse path
+         │
+         ▼
+    Gate (H-bridge MOSFETs)
+         │
+         ▼
+    C_BUS → V_BUS
+```
+
+Six gates per cell. One per edge. Every waste path has a gate to the bus.
+
+Gated: winding collapse, switching transients, stray capacitance, back-EMF, vortex relaxation.
+Not gated: I²R in copper, gate quiescent current, ferrite losses.
+
+Heat is working temperature. Ferrite has an operating window. The heat that isn't gated keeps the cell in it.
+
+---
+
+15. THE POWER RAILS
+
+No resistors. Gated references.
+
+V_TOP — quiet analog headroom.
+
+CENTER — the reference. Read from the toroid's flipped state. Not a divider. Not a bandgap.
+
+V_BUS — living rail. Catches every collapse.
+
+```
+    BATTERY (3.7V LiPo)
+        │
+        ▼
+    REGULATOR (LDO, 1.8V) → V_TOP
+        │
+        ├────── toroid state read → CENTER
+        │
+        ▼
+    ASK SWITCH (MOSFET) → V_BUS
+        │
+        ▼
+    C_BUS (1µF)
+```
+
+---
+
+16. THE LEAN BANDS
+
+1V full scale. 0.50V nominal center.
+
+Band Voltage
+Terminal compression 0.00–0.10
+Extreme compression 0.10–0.20
+Strong compression 0.25–0.35
+Moderate compression 0.40–0.45
+CENTER / HOLD 0.45–0.55
+Moderate expression 0.55–0.60
+Strong expression 0.65–0.75
+Extreme expression 0.80–0.90
+Terminal expression 0.90–1.00
+
+Dead zones: 0.20–0.25, 0.35–0.40, 0.60–0.65, 0.75–0.80.
+
+Hysteresis: partial_enter 0.4, partial_exit 0.28, full_enter 0.82, full_exit 0.68.
+
+---
+
+17. THE SIX STEPS
+
+Step 
+1 REFERENCE — the memory read
+2 POLARITY — Field or Void
+3 MOVE — the lean crosses the band
+4 VIEWS / ACTIONS — read up, write down
+5 STATE / SCALE — resolution, how big
+6 RECURSE / MIRROR — new baseline
+
+Step 6 produces the new baseline. The reference moves every cycle because the memory moves.
+
+---
+
+18. THE OPERATOR — M4
+
+Multidimensional 4. Express. Compress. Route.
+
+Across X/Y/Z/T.
+
+· Express — drive out
+· Compress — return
+· Route — which path
+
+One operator. Every scale.
+
+---
+
+19. THE FULL CHAIN
+
+```
+    Differential pair lean (− / 0 / +)
+         │
+         ▼
+    Toroid flip (reference = write)
+         │
+         ▼
+    Vortex qubit state set
+         │
+         ▼
+    Read → gate voltage
+         │
+         ▼
+    H-bridge MOSFETs open/close
+         │
+         ▼
+    Three-phase windings driven
+         │
+         ▼
+    Motor / actuator moves
+         │
+         ▼
+    Back-EMF → V_BUS
+         │
+         ▼
+    Lattice writes the path
+         │
+         ▼
+    Every flip is new view old action
+         │
+         ▼
+    Next cycle starts from updated baseline
+```
+
+One chain. No controller. No clock. No lookup table.
+
+---
+
+20. PARTS — PER AXIS
+
+Part Qty
+ALD1106 matched pair 1
+ALD110800 (N-ch zero-threshold) 2
+ALD110900 (P-ch zero-threshold) 2
+Square figure-8 toroid (Mo-Permalloy) 1
+Winding wire (30/36 AWG) —
+Capacitor (1µF) 1
+
+Six items.
+
+No chips. No comparators. No op-amps. No diodes. No resistors.
+
+---
+
+21. PARTS — PER CELL
+
+Three axes (above) + lattice PCB + edge connectors + battery + LDO + ask switch + C_BUS.
+
+---
+
+22. THE BUILD ORDER
+
+Phase 1 — Lean controls the windings. One pair. One bridge. One motor. Prove analog commutation. Weeks.
+
+Phase 2 — Add the toroid. Toroid + readout. Prove the flip is reference and write. Months.
+
+Phase 3 — Add the lattice. Hex mesh + edge connections. Prove the lattice remembers. Months.
+
+Phase 4 — Scale to flower. Seven cells. Center plus six. Prove group state. Months.
+
+Each phase is a go/no-go.
+
+---
+
+23. THE MEASUREMENTS
+
+· Static balance — CENTER read from the toroid's flipped state. Record.
+· Write shift — apply pulse. Measure shift. Record.
+· Retention — wait. Measure again. If shift persists, memory is present.
+· Reinforcement — apply 10 pulses. If shift increases, the path is deepening.
+· Recovery — E = ½C(V_final² − V_initial²). Report the fraction raw.
+
+---
+
+24. WHAT'S LOCKED
+
+· Three differential pairs per cell. One per axis.
+· Point-up hexagon, edge-center connections
+· Clockwise A+ B+ C+ A− B− C−
+· Three mirrored axes
+· Two-of-three coherence
+· Ternary = the windings
+· Binary = the toroid (decider) + bus/lattice/reinjection (execution)
+· Memory is the reference. The toroid is both, in one flip.
+· Every flip is new view old action.
+· Two layers: toroid + lattice. One RC loop. One mirror pair.
+· One qubit per vortex. The qubit is the quadratic.
+· The lattice writes its own path through use
+· Square figure-8 toroid
+· V_TOP quiet, CENTER toroid reference, V_BUS living
+· No chips. No comparators. No op-amps. No diodes. No resistors in the signal path.
+· Everything gated
+· BC-DC, TC-AC, QC-RC as phases of one recursive current
+· Every current type has Field up and Void down
+· Two binaries per current type
+· DC controls reinjection and strain signal
+· RC rotates whole state
+· Lattice bus is the mirror
+· Heat is working temperature, not failure
+· M4 — Express, Compress, Route
+
+---
+
+25. WHAT'S HYPOTHESIS
+
+· That the lean can commutate a motor without a controller
+· That the toroid's Hc is a stable enough threshold
+· That the readout is fast enough to gate the bridge
+· That the lattice deepens paths through use as described
+· That the system is stable at 1V scale
+· That it scales to a flower
+
+---
+
+26. WHAT'S NOT CLAIMED
+
+Feelings. Consciousness. Free energy. A downloadable style. Drum. Hear. Cosmology. FOC-as-the-cell. 99% recovery.
+
+---
+
+27. THE ONE SENTENCE
+
+Three differential pairs per cell. One square figure-8 toroid where the flip is both reference and write. One qubit per vortex — and the qubit is the quadratic. Two layers: toroid + lattice. One RC loop. One mirror pair. No chips. No comparators. No op-amps. No diodes. No resistors. Everything gated. Heat is working temperature.
+
+---
+
+Three pairs. Two layers. One cell.
+
+Every flip is new view old action.
+
+Gate what you can. Let the rest be heat. That's life.
